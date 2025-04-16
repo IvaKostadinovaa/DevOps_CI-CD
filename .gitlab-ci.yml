@@ -1,0 +1,28 @@
+stages:
+  - build
+  - push
+
+variables:
+  IMAGE_NAME: ivakostadinova/devops_h5
+  TAG: latest
+
+before_script:
+  - docker info
+
+build_image:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - docker build -t $IMAGE_NAME:$TAG .
+
+push_image:
+  stage: push
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker push $IMAGE_NAME:$TAG
+
